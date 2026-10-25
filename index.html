@@ -1,0 +1,247 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Seed Rewards</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 20px 16px 90px;
+      background: #0b1711; color: #f2fff5;
+      font-family: Arial, sans-serif;
+    }
+    .app { max-width: 440px; margin: auto; }
+    .brand { color: #9de7a9; font-weight: bold; }
+    .hero {
+      margin-top: 22px; padding: 24px;
+      border-radius: 22px;
+      background: linear-gradient(135deg,#174a2c,#102d20);
+    }
+    .muted { color: #a7b9ac; font-size: 14px; }
+    .balance { font-size: 38px; font-weight: 800; margin: 12px 0; }
+    h2 { font-size: 19px; margin-top: 26px; }
+    .card {
+      background: #14251b; border: 1px solid #294532;
+      padding: 16px; border-radius: 16px; margin: 12px 0;
+    }
+    .task { display: flex; align-items: center; gap: 12px; }
+    .emoji { font-size: 27px; }
+    .taskinfo { flex: 1; }
+    .taskinfo strong { display: block; margin-bottom: 6px; }
+    button {
+      border: 0; border-radius: 11px; padding: 11px 14px;
+      background: #91e6a1; color: #102719;
+      font-weight: bold; cursor: pointer;
+    }
+    button:disabled { opacity: .5; cursor: default; }
+    .wide { width: 100%; margin-top: 12px; }
+    .nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      display: flex; justify-content: center; gap: 8px;
+      background: #101e15; border-top: 1px solid #294532;
+      padding: 12px 6px; z-index: 5;
+    }
+    .nav button { background: transparent; color: #b7cbbb; }
+    .nav button.active { background: #24452e; color: #a9f0b5; }
+    .page { display: none; }
+    .page.active { display: block; }
+    .notice { font-size: 12px; color: #a7b9ac; line-height: 1.6; }
+    input {
+      width: 100%; padding: 12px; margin: 10px 0;
+      border-radius: 10px; border: 1px solid #45634c;
+      background: #0b1711; color: white;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="brand">🌱 SEED REWARDS</div>
+  <p class="muted">Small tasks. Growing rewards.</p>
+
+  <section id="home" class="page active">
+    <div class="hero">
+      <div class="muted">YOUR DEMO BALANCE</div>
+      <div class="balance"><span id="balance">0</span> 🌱</div>
+      <div class="muted">Virtual points • Not real money</div>
+      <button class="wide" onclick="showPage('tasks')">Explore tasks →</button>
+    </div>
+    <h2>Today's check-in</h2>
+    <div class="card">
+      <div class="task">
+        <div class="emoji">📅</div>
+        <div class="taskinfo">
+          <strong>Daily check-in</strong>
+          <span class="muted">Claim 10 demo points each day</span>
+        </div>
+        <button id="dailyBtn" onclick="dailyCheckin()">Claim</button>
+      </div>
+    </div>
+    <h2>How it works</h2>
+    <p class="muted">Explore tasks, collect demo points, and share your invite link. Real rewards may be added only when a legitimate reward budget is available.</p>
+  </section>
+
+  <section id="tasks" class="page">
+    <h2>🎯 Available tasks</h2>
+    <div class="card">
+      <div class="task">
+        <div class="emoji">📢</div>
+        <div class="taskinfo">
+          <strong>Visit our channel</strong>
+          <span class="muted">Reward: 20 demo points</span>
+        </div>
+      </div>
+      <button class="wide" onclick="openChannel()">Open Telegram channel</button>
+      <button id="channelClaim" class="wide" onclick="claimTask('channel',20)">Claim demo points</button>
+    </div>
+
+    <div class="card">
+      <div class="task">
+        <div class="emoji">🤝</div>
+        <div class="taskinfo">
+          <strong>Sample sponsor task</strong>
+          <span class="muted">Reward: 30 demo points</span>
+        </div>
+      </div>
+      <p class="notice">Example task for testing. No real sponsor is connected.</p>
+      <button id="sponsorClaim" class="wide" onclick="claimTask('sponsor',30)">Complete demo task</button>
+    </div>
+
+    <p class="notice">These buttons simulate task claims. They do not verify channel membership or sponsor actions. Verification requires a secure backend.</p>
+  </section>
+
+  <section id="invite" class="page">
+    <h2>👥 Invite friends</h2>
+    <div class="card">
+      <div style="font-size:32px">🌿</div>
+      <h3>Grow together</h3>
+      <p class="muted">Share your demo invite link with friends.</p>
+      <input id="inviteLink" readonly>
+      <button class="wide" onclick="copyInvite()">Copy invite link</button>
+      <p id="copyStatus" class="notice"></p>
+    </div>
+    <p class="notice">Referral bonuses are disabled in this prototype. Real referral rewards need server-side tracking to prevent fake invites.</p>
+  </section>
+
+  <section id="rewards" class="page">
+    <h2>🎁 Rewards</h2>
+    <div class="card">
+      <div class="emoji">🌱</div>
+      <h3>Seed points</h3>
+      <div class="balance"><span id="rewardBalance">0</span></div>
+      <p class="muted">These are test points only and cannot be withdrawn or exchanged for cash.</p>
+    </div>
+    <div class="card">
+      <strong>Future rewards</strong>
+      <p class="muted">When real sponsors and a funded reward system are available, we can add clear eligibility rules and a secure redemption process.</p>
+    </div>
+  </section>
+</div>
+
+<nav class="nav">
+  <button class="active" data-page="home" onclick="showPage('home')">🏠 Home</button>
+  <button data-page="tasks" onclick="showPage('tasks')">🎯 Tasks</button>
+  <button data-page="invite" onclick="showPage('invite')">👥 Invite</button>
+  <button data-page="rewards" onclick="showPage('rewards')">🎁 Rewards</button>
+</nav>
+
+<script>
+  // DEMO ONLY: browser storage is not secure or shared across devices.
+  const tg = window.Telegram && window.Telegram.WebApp;
+  if (tg) {
+    tg.ready();
+    tg.expand();
+  }
+
+  let points = Number(localStorage.getItem('seed_demo_points') || 0);
+  let claimed = JSON.parse(
+    localStorage.getItem('seed_demo_claimed') || '{}'
+  );
+  let lastDaily = localStorage.getItem('seed_demo_daily') || '';
+
+  function save() {
+    localStorage.setItem('seed_demo_points', String(points));
+    localStorage.setItem('seed_demo_claimed', JSON.stringify(claimed));
+    updateUI();
+  }
+
+  function updateUI() {
+    document.getElementById('balance').textContent = points;
+    document.getElementById('rewardBalance').textContent = points;
+
+    document.getElementById('dailyBtn').disabled =
+      lastDaily === new Date().toDateString();
+    document.getElementById('dailyBtn').textContent =
+      lastDaily === new Date().toDateString() ? 'Claimed' : 'Claim';
+
+    document.getElementById('channelClaim').disabled =
+      !!claimed.channel;
+    document.getElementById('channelClaim').textContent =
+      claimed.channel ? 'Claimed ✓' : 'Claim demo points';
+
+    document.getElementById('sponsorClaim').disabled =
+      !!claimed.sponsor;
+    document.getElementById('sponsorClaim').textContent =
+      claimed.sponsor ? 'Completed ✓' : 'Complete demo task';
+  }
+
+  function dailyCheckin() {
+    const today = new Date().toDateString();
+    if (lastDaily === today) return;
+    points += 10;
+    lastDaily = today;
+    localStorage.setItem('seed_demo_daily', lastDaily);
+    save();
+  }
+
+  function claimTask(name, reward) {
+    if (claimed[name]) return;
+    claimed[name] = true;
+    points += reward;
+    save();
+  }
+
+  function openChannel() {
+    window.open('https://t.me/', '_blank');
+  }
+
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(page => {
+      page.classList.toggle('active', page.id === name);
+    });
+    document.querySelectorAll('.nav button').forEach(button => {
+      button.classList.toggle('active', button.dataset.page === name);
+    });
+  }
+
+  function copyInvite() {
+    const bot = 'YOUR_BOT_USERNAME';
+    const link = 'https://t.me/' + bot + '?start=ref_demo';
+    const field = document.getElementById('inviteLink');
+    field.value = link;
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(link).then(() => {
+        document.getElementById('copyStatus').textContent =
+          'Demo link copied!';
+      }).catch(() => {
+        field.select();
+        document.getElementById('copyStatus').textContent =
+          'Select and copy the link manually.';
+      });
+    } else {
+      field.select();
+      document.getElementById('copyStatus').textContent =
+        'Select and copy the link manually.';
+    }
+  }
+
+  document.getElementById('inviteLink').value =
+    'Replace YOUR_BOT_USERNAME with your bot username';
+
+  updateUI();
+</script>
+</body>
+</html>
